@@ -10,13 +10,13 @@ public class Family extends Thread{
     ArrayList<Integer> granted = new ArrayList<>();
     int myNum = 0;
     boolean inCS = false;
-    Communicator communicator = new Communicator();
+    Communicator communicator = new Communicator();     // each family has a LinkedBlockingQueue for communication.
     int shopping_times = 3;     // each family shopping 3 times
     java.util.Random r = new java.util.Random();
 
     Family(int id) {
         this.myID = id;
-        if (this.myID == 0) { haveToken = true; }
+        if (this.myID == 0) { haveToken = true; }       // granted token to 1st family
         for (int i = 0; i < Main.number_of_families; i ++) {
             requested.add(0);
             granted.add(0);
@@ -60,7 +60,7 @@ public class Family extends Thread{
             // receive message.
             try {
                 Integer[] message = communicator.recieve();
-                if (message != null) {
+                if (message != null) {      // the queue is empty.
                     int request_or_token = message[0];
                     int source = message[1];
                     int requestedNum = message[2];

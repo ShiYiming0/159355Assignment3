@@ -9,9 +9,9 @@ public class Family extends Thread {
     ArrayList<Integer> deferred = new ArrayList<>();
     int highestNum = 0;
     boolean requestCS = false;
-    java.util.Random r = new java.util.Random();
-    Communicator communicator = new Communicator();
-    ArrayList<Integer> recieveList = new ArrayList<>();
+    java.util.Random r = new java.util.Random();        // used to randomly request critical section.
+    Communicator communicator = new Communicator();     // each family has a LinkedBlockingQueue for communication.
+    ArrayList<Integer> recieveList = new ArrayList<>(); // wait these families' reply.
     int shopping_times = 3;     // each family shopping 3 times
 
     Family (int id) {
@@ -28,11 +28,11 @@ public class Family extends Thread {
             // receive message.
             try {
                 Integer[] message = communicator.recieve();
-                if (message != null) {
+                if (message != null) {  // the LinkedBlockingQueue is empty.
                     int request_or_reply = message[0];
                     int source = message[1];
                     int requestedNum = message[2];
-                    if (request_or_reply == 1) {        // deal with request
+                    if (request_or_reply == 1) {        // deal with request.
                         highestNum = Math.max(highestNum, requestedNum);
                         if (!requestCS || requestedNum < myNum) {
                             for (Family n : Main.families.getFamilies()) {
@@ -66,6 +66,7 @@ public class Family extends Thread {
             if (shopping_times > 0 && !requestCS && r.nextInt(10) == 1) {
                 requestCS = true;
                 myNum = highestNum + 1;
+                // send request to other families.
                 for (Family n : Main.families.getFamilies()) {
                     if (n.myID != myID) {
                         try {
